@@ -6,7 +6,7 @@ body {
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
+    /* align-items: center; */
     height: 100vh;
 }
 
@@ -51,7 +51,7 @@ form input {
 form button {
     width: 30%;
     padding: 10px;
-    background-color: #007bff;
+    background-color: #4b7e96;
     color: white;
     border: none;
     border-radius: 5px;
@@ -60,7 +60,7 @@ form button {
 }
 
 form button:hover {
-    background-color: #0056b3;
+    background-color: rgb(122, 186, 216);
 }
 
 .popup {

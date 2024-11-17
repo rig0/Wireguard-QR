@@ -14,6 +14,7 @@
 </head>
 <body>
     <div class="container">
+        <br>
         <img src="/css/wg-qr.png" alt="App Icon" class="icon">
         <form id="wireguard-form">
             <h2>Interface</h2>
@@ -44,6 +45,16 @@
             
             <button type="submit">Create</button>
         </form>
+        <br>
+        <br>
+        <form id="upload-form">
+            <h2>Upload</h2>
+            <label for="configFile">Upload Config File</label>
+            <input type="file" id="configFile" name="configFile" accept=".conf" required>
+            <button type="button" id="uploadButton">Generate</button>
+        </form>
+        <br>
+        <br>
     </div>
     
     <div id="qr-popup" class="popup">
@@ -53,6 +64,14 @@
             <img id="qr-code-image" alt="QR Code">
         </div>
     </div>
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <span id="close-popup">&times;</span>
+            <h2>Generated QR Code</h2>
+            <img src="" alt="QR Code">
+        </div>
+    </div>
+    
 
     <script>
         const form = document.getElementById('wireguard-form');
@@ -88,5 +107,40 @@
             }
         };
     </script>
+    <script>
+        document.getElementById('uploadButton').addEventListener('click', () => {
+            const fileInput = document.getElementById('configFile');
+            if (fileInput.files.length === 0) {
+                alert("Please select a configuration file to upload.");
+                return;
+            }
+    
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const configContent = event.target.result;
+    
+                // Send the file content to the server via fetch
+                fetch('/generate-qr', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ config: configContent })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.qrCode) {
+                        // Display QR code in a popup or inline
+                        const popup = document.getElementById('popup');
+                        popup.style.display = 'flex';
+                        popup.querySelector('.popup-content img').src = data.qrCode;
+                    } else {
+                        alert("Failed to generate QR code.");
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            };
+    
+            reader.readAsText(fileInput.files[0]);
+        });
+    </script>    
 </body>
 </html>

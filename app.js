@@ -37,6 +37,25 @@ Endpoint = ${Endpoint}`;
     }
 });
 
+//const QRCode = require('qrcode');
+
+app.post('/generate-qr', express.json(), (req, res) => {
+    const { config } = req.body;
+    if (!config) {
+        return res.status(400).json({ error: 'No configuration file content provided.' });
+    }
+
+    QRCode.toDataURL(config, (err, url) => {
+        if (err) {
+            console.error('QR Code generation error:', err);
+            return res.status(500).json({ error: 'Failed to generate QR code.' });
+        }
+
+        res.json({ qrCode: url });
+    });
+});
+
+
 // Start the server
 const PORT = process.env.PORT || 5182;
 app.listen(PORT, () => {

@@ -8,7 +8,5 @@ services:
     user: "1000:1000"
     ports:
       - "5182:5182"
-    env_file:
-      - .env
     volumes:
       - ./data:/usr/src/wireguard-qr/data

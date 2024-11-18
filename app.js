@@ -2,11 +2,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const QRCode = require('qrcode');
+const sodium = require('sodium-native');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
+
+// Add body parser middleware to handle JSON
+app.use(express.json()); // This will allow req.body to contain the parsed JSON data
+
 
 // Route for the main page
 app.get('/', (req, res) => {
@@ -14,9 +19,8 @@ app.get('/', (req, res) => {
 });
 
 // Route to generate the QR code
-app.post('/generate', async (req, res) => {
+app.post('/create-qr', async (req, res) => {
     const { PrivateKey, Address, DNS, PublicKey, PreSharedKey, AllowedIPs, PersistentKeepAlive, Endpoint } = req.body;
-
     const config = `[Interface]
 PrivateKey = ${PrivateKey}
 Address = ${Address}
@@ -29,6 +33,8 @@ AllowedIPs = ${AllowedIPs}
 PersistentKeepAlive = ${PersistentKeepAlive}
 Endpoint = ${Endpoint}`;
 
+    console.log(config)
+
     try {
         const qrCode = await QRCode.toDataURL(config);
         res.json({ qrCode });
@@ -36,8 +42,6 @@ Endpoint = ${Endpoint}`;
         res.status(500).json({ error: 'Failed to generate QR code' });
     }
 });
-
-//const QRCode = require('qrcode');
 
 app.post('/generate-qr', express.json(), (req, res) => {
     const { config } = req.body;
@@ -52,6 +56,21 @@ app.post('/generate-qr', express.json(), (req, res) => {
         }
 
         res.json({ qrCode: url });
+    });
+});
+
+app.post('/generate-keys', (req, res) => {
+    console.log("made it")
+    const privateKey = Buffer.alloc(sodium.crypto_box_SECRETKEYBYTES);
+    const publicKey = Buffer.alloc(sodium.crypto_box_PUBLICKEYBYTES);
+    console.log(privateKey)
+    console.log(publicKey)
+
+    sodium.crypto_box_keypair(publicKey, privateKey);
+
+    res.json({
+        privateKey: privateKey.toString('base64'),
+        publicKey: publicKey.toString('base64')
     });
 });
 

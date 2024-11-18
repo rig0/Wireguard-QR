@@ -16,6 +16,8 @@
     <div class="container">
         <br>
         <img src="/css/wg-qr.png" alt="App Icon" class="icon">
+
+        <!-- WireGuard Form -->
         <form id="wireguard-form">
             <h2>Interface</h2>
             <label>PrivateKey</label>
@@ -43,20 +45,37 @@
             <label>Endpoint</label>
             <input type="text" name="Endpoint" required>
             
-            <button type="submit">Create</button>
+            <button type="submit">Create QR</button>
         </form>
         <br>
         <br>
+
+        <!-- Generate Keys Section -->
+        <form id="key-gen-form">
+            <h2>Generate Keys</h2>
+            <label>Private Key</label>
+            <input type="text" id="generatedPrivateKey" readonly onclick="copyToClipboard('generatedPrivateKey')">
+            
+            <label>Public Key</label>
+            <input type="text" id="generatedPublicKey" readonly onclick="copyToClipboard('generatedPublicKey')">
+            
+            <button type="button" id="generateKeysButton">Generate Keys</button>
+        </form>
+        <br>
+        <br>
+
+        <!-- Upload Config Form -->
         <form id="upload-form">
             <h2>Upload</h2>
             <label for="configFile">Upload Config File</label>
             <input type="file" id="configFile" name="configFile" accept=".conf" required>
-            <button type="button" id="uploadButton">Generate</button>
+            <button type="button" id="uploadButton">Generate QR</button>
         </form>
         <br>
         <br>
     </div>
     
+    <!-- Unified QR Code Popup -->
     <div id="qr-popup" class="popup">
         <div class="popup-content">
             <span id="close-popup">&times;</span>
@@ -64,16 +83,9 @@
             <img id="qr-code-image" alt="QR Code">
         </div>
     </div>
-    <div class="popup" id="popup">
-        <div class="popup-content">
-            <span id="close-popup">&times;</span>
-            <h2>Generated QR Code</h2>
-            <img src="" alt="QR Code">
-        </div>
-    </div>
     
-
     <script>
+        // Handle QR code generation from WireGuard form
         const form = document.getElementById('wireguard-form');
         const popup = document.getElementById('qr-popup');
         const closePopup = document.getElementById('close-popup');
@@ -83,8 +95,9 @@
             e.preventDefault();
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
+            console.log(data)
 
-            const response = await fetch('/generate', {
+            const response = await fetch('/create-qr', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -97,6 +110,64 @@
             }
         });
 
+        // Handle QR code generation from upload
+        document.getElementById('uploadButton').addEventListener('click', () => {
+            const fileInput = document.getElementById('configFile');
+            if (fileInput.files.length === 0) {
+                alert("Please select a configuration file to upload.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const configContent = event.target.result;
+
+                fetch('/generate-qr', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ config: configContent })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.qrCode) {
+                        qrCodeImage.src = data.qrCode;
+                        popup.style.display = 'block';
+                    } else {
+                        alert("Failed to generate QR code.");
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            };
+
+            reader.readAsText(fileInput.files[0]);
+        });
+
+        // Generate Keys Section
+        document.getElementById('generateKeysButton').addEventListener('click', async () => {
+            try {
+                // Make the request to the server to generate keys
+                const response = await fetch('/generate-keys', {method: 'POST'});
+                if (!response.ok) {
+                    throw new Error('Failed to generate keys. Server responded with ' + response.status);
+                }
+
+                // Parse the JSON response
+                const keys = await response.json();
+
+                // Populate the inputs with the generated keys
+                const privateKeyInput = document.getElementById('generatedPrivateKey');
+                const publicKeyInput = document.getElementById('generatedPublicKey');
+
+                privateKeyInput.value = keys.privateKey || 'Error generating Private Key';
+                publicKeyInput.value = keys.publicKey || 'Error generating Public Key';
+
+            } catch (error) {
+                console.error('Error during key generation:', error);
+                alert('Error generating keys. Please try again.');
+            }
+        });
+
+        // Close the popup
         closePopup.addEventListener('click', () => {
             popup.style.display = 'none';
         });
@@ -106,41 +177,15 @@
                 popup.style.display = 'none';
             }
         };
+
+        // Copy to clipboard
+        function copyToClipboard(elementId) {
+            const input = document.getElementById(elementId);
+            input.select();
+            input.setSelectionRange(0, 99999); // For mobile devices
+            document.execCommand("copy");
+            //alert(`${elementId.replace('generated', '')} copied to clipboard.`);
+        }
     </script>
-    <script>
-        document.getElementById('uploadButton').addEventListener('click', () => {
-            const fileInput = document.getElementById('configFile');
-            if (fileInput.files.length === 0) {
-                alert("Please select a configuration file to upload.");
-                return;
-            }
-    
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                const configContent = event.target.result;
-    
-                // Send the file content to the server via fetch
-                fetch('/generate-qr', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ config: configContent })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.qrCode) {
-                        // Display QR code in a popup or inline
-                        const popup = document.getElementById('popup');
-                        popup.style.display = 'flex';
-                        popup.querySelector('.popup-content img').src = data.qrCode;
-                    } else {
-                        alert("Failed to generate QR code.");
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            };
-    
-            reader.readAsText(fileInput.files[0]);
-        });
-    </script>    
 </body>
 </html>

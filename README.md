@@ -11,3 +11,4 @@ A self hosted QR code generator for wireguard configs
 
 ## To Do:
 - download button
+- better readme

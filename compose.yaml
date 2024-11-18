@@ -2,7 +2,7 @@ version: '3'
 services:
   wireguard-qr:
     container_name: wireguard-qr
-    image: wireguard-qr:0.0.1
+    image: wireguard-qr:0.0.2
     build: .
     restart: always
     user: "1000:1000"

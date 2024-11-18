@@ -1,0 +1,43 @@
+name: Update Docker Compose Version
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  update-docker-compose-version:
+    runs-on: CodeServer
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Update version in docker-compose.yml
+        run: |
+          # Get current version
+          current_version=$(grep 'image: wireguard-qr' docker-compose.yml | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          IFS='.' read -ra VERSION <<< "$current_version"
+          
+          # Replace with new version
+          new_version="${VERSION[0]}.${VERSION[1]}.$((VERSION[2]+1))"
+          sed -i "s/wireguard-qr:$current_version/wireguard-qr:$new_version/" docker-compose.yml
+          echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
+          
+          # Update docker-compose
+          git add docker-compose.yml
+          git commit -m "Update app version to $new_version"
+          
+          # Push changes using access token for authentication
+          git push https://rambo:${{ secrets.GITEA_PAT }}@rigslab.com/Rambo/Wireguard-QR.git master
+
+      - name: Shut down running dev container
+        run: |
+          ssh-keyscan -H Dev-Stack.home.arpa >> ~/.ssh/known_hosts
+          ssh rambo@Dev-Stack.home.arpa 'ssh-keyscan -H ssh.rigslab.com >> ~/.ssh/known_hosts && cd /opt/stacks/wireguard-qr && sudo docker-compose down && sudo docker images wireguard-qr -q | xargs -r sudo docker rmi'
+
+      - name: Pull new version to dev server & update
+        run: |
+          ssh rambo@Dev-Stack.home.arpa 'git clone git@ssh.rigslab.com:Rambo/Wireguard-QR.git /tmp/wireguard-qr && rm -rf /opt/stacks/wireguard-qr/* && cp -R /tmp/wireguard-qr/* /opt/stacks/wireguard-qr && rm -R /tmp/wireguard-qr && cd /opt/stacks/wireguard-qr && sudo docker-compose up -d'
+
+      - name: Send notification
+        run: /home/rambo/app-updated.sh "Wireguard-QR updated to $NEW_VERSION"

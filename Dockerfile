@@ -20,4 +20,4 @@ EXPOSE 5182
 RUN npm install pm2 -g && pm2 install pm2-logrotate
 
 # Command to run application
-CMD ["pm2-runtime", "start", "index.js", "--name", "wireguard-qr"]
+CMD ["pm2-runtime", "start", "app.js", "--name", "wireguard-qr"]

@@ -203,6 +203,15 @@
         // Revert back to the original input type (password)
         input.type = originalType;
         }
+        // Reset form fields on page load
+        window.onload = function() {
+            const wgForm = document.getElementById('wireguard-form');
+            wgForm.reset();
+            const keyForm = document.getElementById('key-gen-form');
+            keyForm.reset();
+            const uploadForm = document.getElementById('upload-form');
+            uploadForm.reset();
+        }
 
     </script>
 </body>

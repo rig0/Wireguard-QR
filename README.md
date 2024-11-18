@@ -2,6 +2,6 @@
 
 A self hosted QR code generator for wireguard configs
 
-dep:
-wireguard
-
+To Do:
+- create DOCKERFILE
+- 

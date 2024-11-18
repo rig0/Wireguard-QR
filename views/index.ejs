@@ -95,7 +95,6 @@
             e.preventDefault();
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            console.log(data)
 
             const response = await fetch('/create-qr', {
                 method: 'POST',
@@ -107,6 +106,7 @@
             if (result.qrCode) {
                 qrCodeImage.src = result.qrCode;
                 popup.style.display = 'block';
+                form.reset();
             }
         });
 

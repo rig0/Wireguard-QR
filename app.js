@@ -32,8 +32,6 @@ AllowedIPs = ${AllowedIPs}
 PersistentKeepAlive = ${PersistentKeepAlive}
 Endpoint = ${Endpoint}`;
 
-    console.log(config)
-
     try {
         const qrCode = await QRCode.toDataURL(config);
         res.json({ qrCode });

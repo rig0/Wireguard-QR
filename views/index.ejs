@@ -53,6 +53,7 @@
         <!-- Generate Keys Section -->
         <form id="key-gen-form">
             <h2>Generate Keys</h2>
+            <h5>(click fields to copy keys)</h5>
             <label>Private Key</label>
             <input type="password" id="generatedPrivateKey" readonly onclick="copyToClipboard('generatedPrivateKey')">
             
@@ -66,8 +67,8 @@
 
         <!-- Upload Config Form -->
         <form id="upload-form">
-            <h2>Upload</h2>
-            <label for="configFile">Upload Config File</label>
+            <h2>Generate from file</h2>
+            <label for="configFile">Select configuration file</label>
             <input type="file" id="configFile" name="configFile" accept=".conf" required>
             <button type="button" id="uploadButton">Generate QR</button>
         </form>
@@ -107,6 +108,10 @@
                 qrCodeImage.src = result.qrCode;
                 popup.style.display = 'block';
                 form.reset();
+                const keyForm = document.getElementById('key-gen-form');
+                keyForm.reset();
+                const uploadForm = document.getElementById('upload-form');
+                uploadForm.reset();
             }
         });
 
@@ -132,6 +137,8 @@
                     if (data.qrCode) {
                         qrCodeImage.src = data.qrCode;
                         popup.style.display = 'block';
+                        const uploadForm = document.getElementById('upload-form');
+                        uploadForm.reset();
                     } else {
                         alert("Failed to generate QR code.");
                     }

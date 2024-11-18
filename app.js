@@ -10,8 +10,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 
 // Add body parser middleware to handle JSON
-app.use(express.json()); // This will allow req.body to contain the parsed JSON data
-
+app.use(express.json()); 
 
 // Route for the main page
 app.get('/', (req, res) => {

@@ -21,7 +21,7 @@
         <form id="wireguard-form">
             <h2>Interface</h2>
             <label>PrivateKey</label>
-            <input type="text" name="PrivateKey" required>
+            <input type="password" name="PrivateKey" required>
             
             <label>Address</label>
             <input type="text" name="Address" required>
@@ -34,7 +34,7 @@
             <input type="text" name="PublicKey" required>
             
             <label>PreSharedKey</label>
-            <input type="text" name="PreSharedKey">
+            <input type="password" name="PreSharedKey">
             
             <label>AllowedIPs</label>
             <input type="text" name="AllowedIPs" required>
@@ -54,7 +54,7 @@
         <form id="key-gen-form">
             <h2>Generate Keys</h2>
             <label>Private Key</label>
-            <input type="text" id="generatedPrivateKey" readonly onclick="copyToClipboard('generatedPrivateKey')">
+            <input type="password" id="generatedPrivateKey" readonly onclick="copyToClipboard('generatedPrivateKey')">
             
             <label>Public Key</label>
             <input type="text" id="generatedPublicKey" readonly onclick="copyToClipboard('generatedPublicKey')">
@@ -75,7 +75,7 @@
         <br>
     </div>
     
-    <!-- Unified QR Code Popup -->
+    <!-- QR Code Popup -->
     <div id="qr-popup" class="popup">
         <div class="popup-content">
             <span id="close-popup">&times;</span>
@@ -180,12 +180,23 @@
 
         // Copy to clipboard
         function copyToClipboard(elementId) {
-            const input = document.getElementById(elementId);
-            input.select();
-            input.setSelectionRange(0, 99999); // For mobile devices
-            document.execCommand("copy");
-            //alert(`${elementId.replace('generated', '')} copied to clipboard.`);
+        const input = document.getElementById(elementId);
+
+        // Temporarily change type to text to make the text visible for copying
+        const originalType = input.type;
+        input.type = "text";
+
+        // Select the text inside the input
+        input.select();
+        input.setSelectionRange(0, 99999); // For mobile devices
+
+        // Execute the copy command
+        document.execCommand("copy");
+
+        // Revert back to the original input type (password)
+        input.type = originalType;
         }
+
     </script>
 </body>
 </html>

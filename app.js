@@ -57,11 +57,8 @@ app.post('/generate-qr', express.json(), (req, res) => {
 });
 
 app.post('/generate-keys', (req, res) => {
-    console.log("made it")
     const privateKey = Buffer.alloc(sodium.crypto_box_SECRETKEYBYTES);
     const publicKey = Buffer.alloc(sodium.crypto_box_PUBLICKEYBYTES);
-    console.log(privateKey)
-    console.log(publicKey)
 
     sodium.crypto_box_keypair(publicKey, privateKey);
 

@@ -16,8 +16,8 @@ body {
 }
 
 .icon {
-    width: 300px;
-    height: 300px;
+    width: 200px;
+    height: 200px;
     margin-bottom: 20px;
 }
 
@@ -66,16 +66,24 @@ form button:hover {
 .popup {
     display: none;
     position: fixed;
-    /* top: 0;
-    left: 0; */
-    width: 50%;
-    height: 30%;
-    background-color: rgba(0, 0, 0, 0.8);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
     justify-content: center;
     align-items: center;
+    z-index: 1000; 
+    overflow: hidden; 
 }
 
 .popup-content {
+    position: fixed;
+    top: 50%; /* Start 50% down the viewport */
+    left: 50%; /* Start 50% across the viewport */
+    transform: translate(-50%, -50%); /* Shift back by 50% of the modal width/height */
+    width: auto;
+    height: auto;
     background-color: #1e1e1e;
     padding: 20px;
     border-radius: 10px;

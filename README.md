@@ -2,5 +2,13 @@
 
 A self hosted QR code generator for wireguard configs
 
-To Do:
+
+## Features
+
+- Create QR code from new config
+- Create QR code from file
+- Wireguard key generator
+
+## To Do:
 - create DOCKERFILE
+- download button

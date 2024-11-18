@@ -28,7 +28,7 @@ jobs:
           git commit -m "Update app version to $new_version"
           
           # Push changes using access token for authentication
-          git push https://rambo:${{ secrets.GITEA_PAT }}@rigslab.com/Rambo/Wireguard-QR.git master
+          git push https://rambo:${{ secrets.GITEA_PAT }}@rigslab.com/Rambo/Wireguard-QR.git main
 
       - name: Shut down running dev container
         run: |

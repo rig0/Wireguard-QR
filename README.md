@@ -23,7 +23,7 @@ A self hosted QR code generator for wireguard configuartions. I'm aware of onlin
 
 # Setup
 
-### Option 1: Docker Compose
+### Option 1: Docker Compose (from source)
 
 ##### Clone repo
 ```bash
@@ -40,9 +40,8 @@ cd ./Wireguard-QR
 docker-compose up -d
 ```
 
-***To Do: upload docker image to a repo for easier setup***
 
-### Option 2: Natively using Node.js
+### Option 2: Node.js (from source)
 
 ##### Install dependancies
 ```bash

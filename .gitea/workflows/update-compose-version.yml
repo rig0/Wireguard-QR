@@ -53,7 +53,7 @@ jobs:
           echo 'Container did not start in time.'
           exit 1"
         
-      - name: Send notification
+      - name: Send notification on success
         run: /home/rambo/app-updated.sh "Wireguard-QR updated to $NEW_VERSION"
 
       - name: Send notification on failure

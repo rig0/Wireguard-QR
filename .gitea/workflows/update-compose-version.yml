@@ -33,7 +33,7 @@ jobs:
       - name: Shut down running dev container
         run: |
           ssh-keyscan -H Dev-Stack.home.arpa >> ~/.ssh/known_hosts
-          ssh rambo@Dev-Stack.home.arpa 'ssh-keyscan -H ssh.rigslab.com >> ~/.ssh/known_hosts && cd /opt/stacks/wireguard-qr && sudo docker-compose down && sudo docker images wireguard-qr -q | xargs -r sudo docker rmi'
+          ssh rambo@Dev-Stack.home.arpa 'ssh-keyscan -H ssh.rigslab.com >> ~/.ssh/known_hosts && cd /opt/stacks/wireguard-qr-dev && sudo docker-compose down && sudo docker images wireguard-qr -q | xargs -r sudo docker rmi'
 
       - name: Pull new version to dev server & update
         run: |

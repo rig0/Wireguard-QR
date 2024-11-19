@@ -37,7 +37,25 @@ jobs:
 
       - name: Pull new version to dev server & update
         run: |
-          ssh rambo@Dev-Stack.home.arpa 'git clone git@ssh.rigslab.com:Rambo/Wireguard-QR.git /tmp/wireguard-qr && rm -rf /opt/stacks/wireguard-qr/* && cp -R /tmp/wireguard-qr/* /opt/stacks/wireguard-qr && rm -R /tmp/wireguard-qr && cd /opt/stacks/wireguard-qr && sudo docker-compose up -d'
+          ssh rambo@Dev-Stack.home.arpa 'git clone git@ssh.rigslab.com:Rambo/Wireguard-QR.git /tmp/wireguard-qr && rm -rf /opt/stacks/wireguard-qr-dev/* && cp -R /tmp/wireguard-qr/* /opt/stacks/wireguard-qr-dev && rm -R /tmp/wireguard-qr && cd /opt/stacks/wireguard-qr-dev && sudo docker-compose up -d'
 
+      - name: Confirm the container is running
+        run: |
+          ssh rambo@Dev-Stack.home.arpa "
+          for i in {1..10}; do
+            if curl -s http://localhost:5182 > /dev/null; then
+              echo 'Container is up and running.'
+              exit 0
+            fi
+            echo 'Waiting for container to be ready... (\$i/10)'
+            sleep 5
+          done
+          echo 'Container did not start in time.'
+          exit 1"
+        
       - name: Send notification
         run: /home/rambo/app-updated.sh "Wireguard-QR updated to $NEW_VERSION"
+
+      - name: Send notification on failure
+        if: failure()
+        run: /home/rambo/app-updated.sh "Wireguard-QR Build $NEW_VERSION FAILED"

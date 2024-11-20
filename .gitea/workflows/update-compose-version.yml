@@ -75,8 +75,8 @@ jobs:
       - name: Tag and upload new latest docker image
         run: |
           ssh rambo@Dev-Stack.home.arpa "
-          sudo docker tag wireguard-qr:source docker.rigslab.com/wireguard-qr:latest
-          sudo docker push docker.rigslab.com/wireguard-qr:latest
+          sudo docker tag wireguard-qr:source dock.rigslab.com/wireguard-qr:latest
+          sudo docker push dock.rigslab.com/wireguard-qr:latest
           "
         
       - name: Send notification on success

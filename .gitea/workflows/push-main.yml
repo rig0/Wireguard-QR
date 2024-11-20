@@ -48,7 +48,7 @@ jobs:
           ssh-keyscan -H Dev-Stack.home.arpa >> ~/.ssh/known_hosts
           ssh rambo@Dev-Stack.home.arpa "./runner/clean-wireguard-qr.sh"
 
-      - name: Pull new version $NEW_VERSION to dev server & run
+      - name: Pull new version to dev server & run
         run: |
           ssh rambo@Dev-Stack.home.arpa "
           git clone git@ssh.rigslab.com:Rambo/Wireguard-QR.git /tmp/wireguard-qr &&\ 
@@ -62,6 +62,7 @@ jobs:
           ssh rambo@Dev-Stack.home.arpa "
           for i in {1..10}; do
             if curl -s http://localhost:5182 > /dev/null; then
+              #Check that the version of the running service matches the new version to avoid current false positive
               echo 'Container is up and running.'
               exit 0
             fi

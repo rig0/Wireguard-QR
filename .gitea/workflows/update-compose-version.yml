@@ -41,16 +41,21 @@ jobs:
           # Push changes and the new tag
           git push https://rambo:${{ secrets.GITEA_PAT }}@rigslab.com/Rambo/Wireguard-QR.git main
           git push https://rambo:${{ secrets.GITEA_PAT }}@rigslab.com/Rambo/Wireguard-QR.git "v$new_version"
-          
+
 
       - name: Shut down running dev container
         run: |
           ssh-keyscan -H Dev-Stack.home.arpa >> ~/.ssh/known_hosts
-          ssh rambo@Dev-Stack.home.arpa 'ssh-keyscan -H ssh.rigslab.com >> ~/.ssh/known_hosts && cd /opt/stacks/wireguard-qr-dev && sudo docker-compose down && sudo docker images wireguard-qr -q | xargs -r sudo docker rmi'
+          ssh rambo@Dev-Stack.home.arpa "./runner/clean-wireguard-qr.sh"
 
       - name: Pull new version to dev server & run
         run: |
-          ssh rambo@Dev-Stack.home.arpa 'git clone git@ssh.rigslab.com:Rambo/Wireguard-QR.git /tmp/wireguard-qr && rm -rf /opt/stacks/wireguard-qr-dev/* && cp -R /tmp/wireguard-qr/* /opt/stacks/wireguard-qr-dev && rm -R /tmp/wireguard-qr && cd /opt/stacks/wireguard-qr-dev && sudo docker-compose up -d'
+          ssh rambo@Dev-Stack.home.arpa "
+          git clone git@ssh.rigslab.com:Rambo/Wireguard-QR.git /tmp/wireguard-qr &&\ 
+          rm -rf /opt/stacks/wireguard-qr-dev/* && cp -R /tmp/wireguard-qr/* /opt/stacks/wireguard-qr-dev
+          cd /opt/stacks/wireguard-qr-dev && sudo docker-compose up -d
+          rm -R /tmp/wireguard-qr
+          "
 
       - name: Confirm the container is running
         run: |

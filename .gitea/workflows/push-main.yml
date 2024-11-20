@@ -81,6 +81,7 @@ jobs:
           "
         
       - name: Send notification on success
+        if: success()
         run: /home/rambo/app-updated.sh "Wireguard-QR updated to $NEW_VERSION"
 
       - name: Send notification on failure

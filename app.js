@@ -20,6 +20,11 @@ app.get('/', (req, res) => {
     res.render('index', { version });
 });
 
+// New endpoint to fetch the version as JSON
+app.get('/api/version', (req, res) => {
+    res.json({ version }); // Sends the version number as a JSON response
+});
+
 // Route to generate the QR code
 app.post('/create-qr', async (req, res) => {
     const { PrivateKey, Address, DNS, PublicKey, PreSharedKey, AllowedIPs, PersistentKeepAlive, Endpoint } = req.body;

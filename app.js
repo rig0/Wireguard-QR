@@ -9,12 +9,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 
+// Read version from package.json or a version.txt file
+const version = require('./package.json').version;
+
 // Add body parser middleware to handle JSON
 app.use(express.json()); 
 
 // Route for the main page
 app.get('/', (req, res) => {
-    res.render('index');
+    res.render('index', { version });
 });
 
 // Route to generate the QR code

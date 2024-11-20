@@ -107,3 +107,23 @@ form button:hover {
 #close-popup:hover {
     color: #ff0000;
 }
+
+.footer {
+    font-size: 13px;
+    color: #8d8d8d;
+    text-align: center;
+    padding: 0 0 15px 0;
+}
+
+.footer-link {
+    color: #cc4039;
+    text-decoration: none;
+}
+.footer-link:visited {
+    color: #cc4039;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    text-decoration: underline;
+}

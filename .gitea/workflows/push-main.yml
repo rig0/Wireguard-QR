@@ -48,7 +48,7 @@ jobs:
           ssh-keyscan -H Dev-Stack.home.arpa >> ~/.ssh/known_hosts
           ssh rambo@Dev-Stack.home.arpa "./runner/clean-wireguard-qr.sh"
 
-      - name: Pull new version to dev server & run
+      - name: Pull new version $NEW_VERSION to dev server & run
         run: |
           ssh rambo@Dev-Stack.home.arpa "
           git clone git@ssh.rigslab.com:Rambo/Wireguard-QR.git /tmp/wireguard-qr &&\ 

@@ -61,12 +61,9 @@ jobs:
         run: |
           ssh rambo@Dev-Stack.home.arpa "
           echo \$NEW_VERSION
-          echo 'NEW_VERSION is $NEW_VERSION'
           for i in {1..10}; do
             if curl -s http://localhost:5182 > /dev/null; then
               version=\$(curl -s http://localhost:5182/api/version | jq -r '.version')
-              echo \"Running version: \$version\"
-              echo 'Expected version: $NEW_VERSION'
               if [ \"\$version\" == '$NEW_VERSION' ]; then
                 echo \"Container is up and running version \$version\"
                 exit 0

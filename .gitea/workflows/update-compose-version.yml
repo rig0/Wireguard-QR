@@ -1,4 +1,4 @@
-name: Update Docker Compose Version
+name: Push to main workflow
 
 on:
   push:
@@ -6,36 +6,49 @@ on:
       - main
 
 jobs:
-  update-docker-compose-version:
+  push-main:
     runs-on: CodeServer
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Update version in compose.yaml
+      - name: Update Version
         run: |
-          # Get current version
-          current_version=$(grep 'image: wireguard-qr' compose.yaml | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          # Get current version from the VERSION file
+          current_version=$(cat VERSION)
           IFS='.' read -ra VERSION <<< "$current_version"
-          
-          # Replace with new version
+
+          # Increment patch version
           new_version="${VERSION[0]}.${VERSION[1]}.$((VERSION[2]+1))"
-          sed -i "s/wireguard-qr:$current_version/wireguard-qr:$new_version/" compose.yaml
+
+          # Update the VERSION file
+          echo "$new_version" > VERSION
           echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
-          
-          # Update docker-compose
-          git add compose.yaml
-          git commit -m "Update app version to $new_version"
-          
-          # Push changes using access token for authentication
+
+          # Update the version in package.json
+          jq ".version = \"$new_version\"" package.json > package.json.tmp && mv package.json.tmp package.json
+
+          # Regenerate package-lock.json to reflect the new version
+          npm install
+
+          # Commit changes
+          git add VERSION package.json package-lock.json
+          git commit -m "Bump version to $new_version"
+
+          # Tag the new version
+          git tag "v$new_version"
+
+          # Push changes and the new tag
           git push https://rambo:${{ secrets.GITEA_PAT }}@rigslab.com/Rambo/Wireguard-QR.git main
+          git push https://rambo:${{ secrets.GITEA_PAT }}@rigslab.com/Rambo/Wireguard-QR.git "v$new_version"
+          
 
       - name: Shut down running dev container
         run: |
           ssh-keyscan -H Dev-Stack.home.arpa >> ~/.ssh/known_hosts
           ssh rambo@Dev-Stack.home.arpa 'ssh-keyscan -H ssh.rigslab.com >> ~/.ssh/known_hosts && cd /opt/stacks/wireguard-qr-dev && sudo docker-compose down && sudo docker images wireguard-qr -q | xargs -r sudo docker rmi'
 
-      - name: Pull new version to dev server & update
+      - name: Pull new version to dev server & run
         run: |
           ssh rambo@Dev-Stack.home.arpa 'git clone git@ssh.rigslab.com:Rambo/Wireguard-QR.git /tmp/wireguard-qr && rm -rf /opt/stacks/wireguard-qr-dev/* && cp -R /tmp/wireguard-qr/* /opt/stacks/wireguard-qr-dev && rm -R /tmp/wireguard-qr && cd /opt/stacks/wireguard-qr-dev && sudo docker-compose up -d'
 
@@ -51,7 +64,15 @@ jobs:
             sleep 5
           done
           echo 'Container did not start in time.'
-          exit 1"
+          exit 1
+          "
+
+      - name: Tag and upload new latest docker image
+        run: |
+          ssh rambo@Dev-Stack.home.arpa "
+          sudo docker tag wireguard-qr:source docker.rigslab.com/wireguard-qr:latest
+          sudo docker push docker.rigslab.com/wireguard-qr:latest
+          "
         
       - name: Send notification on success
         run: /home/rambo/app-updated.sh "Wireguard-QR updated to $NEW_VERSION"

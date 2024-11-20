@@ -51,7 +51,7 @@ jobs:
       - name: Pull new version to dev server & run
         run: |
           ssh rambo@Dev-Stack.home.arpa "
-          git clone git@ssh.rigslab.com:Rambo/Wireguard-QR.git /tmp/wireguard-qr &&\ 
+          git clone git@ssh.rigslab.com:Rambo/Wireguard-QR.git /tmp/wireguard-qr 
           rm -rf /opt/stacks/wireguard-qr-dev/* && cp -R /tmp/wireguard-qr/* /opt/stacks/wireguard-qr-dev
           cd /opt/stacks/wireguard-qr-dev && sudo docker-compose up -d
           rm -R /tmp/wireguard-qr

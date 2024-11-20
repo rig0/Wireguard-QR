@@ -60,11 +60,17 @@ jobs:
       - name: Confirm the container is running
         run: |
           ssh rambo@Dev-Stack.home.arpa "
+          echo \$NEW_VERSION
           for i in {1..10}; do
             if curl -s http://localhost:5182 > /dev/null; then
-              #Check that the version of the running service matches the new version to avoid current false positive
-              echo 'Container is up and running.'
-              exit 0
+              version=\$(curl -s http://localhost:5182/api/version | jq -r '.version')
+              if [ \"\$version\" == \"\$NEW_VERSION\" ]; then
+                echo \"Container is up and running version \$version\"
+                exit 0
+              else
+                echo \"Container is up but running an older version \$version. Something went wrong.\"
+                exit 1
+              fi
             fi
             echo 'Waiting for container to be ready... (\$i/10)'
             sleep 5

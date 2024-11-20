@@ -1,6 +1,6 @@
 {
   "name": "wireguard-qr",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "A self hosted QR code generator for wireguard configs",
   "main": "app.js",
   "scripts": {

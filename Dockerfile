@@ -1,8 +1,8 @@
 # Use an official Node.js runtime as a base image
-FROM node:18
+FROM node:20
 
 # Set the working directory in the container
-WORKDIR /usr/src/wireguard-qr
+WORKDIR /app
 
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
@@ -16,9 +16,5 @@ COPY . .
 # Expose the port on which the app will run
 EXPOSE 5182
 
-# Install pm2
-#RUN npm install pm2 -g && pm2 install pm2-logrotate
-
 # Command to run application
-#CMD ["pm2-runtime", "start", "app.js", "--name", "wireguard-qr"]
 CMD ["node", "app.js"]

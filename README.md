@@ -89,6 +89,5 @@ node app.js
 - No confgurations or QR codes are saved/logged either client side or server side
 
 ## To Do:
-- Host docker image for easier docker install
 - Validate configs before creating QR code
 - Option to download created config?
